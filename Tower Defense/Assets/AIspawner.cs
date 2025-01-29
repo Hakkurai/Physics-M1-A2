@@ -5,7 +5,7 @@ using UnityEngine;
 public class AISpawner : MonoBehaviour
 {
     public GameObject AI;
-    public Transform AIY;
+    public Transform AIY; // The central location around which the AI will spawn
     public float SpawnTimer = 0;
     public float SpawnRate = 1;
     public float MaxTimer = 3;
@@ -16,18 +16,15 @@ public class AISpawner : MonoBehaviour
     public float SpawnTimerX;
     public float SpawnerCap;
 
+    public float spawnRange = 5f; // The range around the central location to spawn AI
 
     void Update()
-
     {
         if (WaveStarted == false)
         {
-
             SpawnVar = SpawnCount;
             WaveStarted = true;
-
         }
-
 
         switch (CurrentWave)
         {
@@ -50,20 +47,29 @@ public class AISpawner : MonoBehaviour
         {
             SpawnTimerX += 1 * Time.deltaTime;
 
-
-
             if (SpawnVar != 0 && SpawnTimerX >= SpawnerCap)
             {
                 SpawnTimerX = 0;
-                Instantiate(AI, AIY);
+
+                // Generate a random position within the specified range
+                Vector3 randomOffset = new Vector3(
+                    Random.Range(-spawnRange, spawnRange), // Random X offset
+                    0,                                    // Keep the same Y position
+                    0
+                );
+
+                Vector3 spawnPosition = AIY.position + randomOffset; // Add the offset to the object's position
+
+                Instantiate(AI, spawnPosition, Quaternion.identity); // Spawn at the calculated position
+
                 SpawnVar--;
-
             }
-
-            else if (SpawnVar == 0) { SpawnTimer = 0; WaveStarted = false; CurrentWave++; }
-
-
-
+            else if (SpawnVar == 0)
+            {
+                SpawnTimer = 0;
+                WaveStarted = false;
+                CurrentWave++;
+            }
         }
     }
 }
